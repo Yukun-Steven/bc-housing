@@ -1,9 +1,17 @@
+#React / Next.js      FastAPI    SQLAlchemy    Database
+
+    
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .database import Base, engine
+from .routers import properties
+
+Base.metadata.create_all(bind=engine)
+
 app = FastAPI(
-    title = "BC Housing API",
-    version = "0.1.0"
+    title="BC Housing API",
+    version="0.1.0",
 )
 
 app.add_middleware(
@@ -17,11 +25,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(properties.router)
+
+
 @app.get("/")
 def root():
     return {
         "message": "BC Housing API is running"
     }
+
 
 @app.get("/health")
 def health():
