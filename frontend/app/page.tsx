@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function Home() {
   const [city, setCity] = useState("");
@@ -9,8 +11,11 @@ export default function Home() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
   const [searchType, setSearchType] = useState<"city" | "id">("city");
+  const searchParams = useSearchParams();
+  const cityFromUrl = searchParams.get("city");
 
-  async function searchProperties() {
+  async function searchProperties(searchCity?: string) {
+    const value = searchCity ?? city;
     if (!city.trim()) {
       setError("Please enter a city.");
       setResult([]);
@@ -88,6 +93,13 @@ export default function Home() {
     setError("");
   }
 
+  useEffect(() => {
+    if (cityFromUrl) {
+      setSearchType("city");
+      setCity(cityFromUrl);
+      searchProperties(cityFromUrl);
+    }
+  }, [cityFromUrl]);
 
 
 
@@ -211,9 +223,10 @@ export default function Home() {
         </div>
         <div className="mt-8 grid gap-4">
           {result.map((property) => (
-            <div
+            <Link
+              href={`/properties/${property.id}?city=${encodeURIComponent(city)}`}
               key={property.id}
-              className="rounded-xl border border-white/10 bg-white/5 p-5"
+              className="block rounded-xl border border-white/10 bg-white/5 p-5 transition hover:border-white/30"
             >
               <h2 className="text-xl font-semibold">
                 {property.address}
@@ -242,7 +255,7 @@ export default function Home() {
                   /sqft
                 </p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
 
