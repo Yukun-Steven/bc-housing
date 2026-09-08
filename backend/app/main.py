@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
-from .routers import properties
+from .routers import properties, zealty
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 app.include_router(properties.router)
-
+app.include_router(zealty.router)
 
 @app.get("/")
 def root():
